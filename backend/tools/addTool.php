@@ -158,7 +158,7 @@ try {
         year, tool_name, type, no_of_license, job_slots, resume_views, bulk_mail, cost, revenue, monthly_cost, quarterly_cost, annual_cost, currency, geography,
         payment_frequency, last_renewal, next_renewal,
         comments, spoc_1, spoc_2, contact_no, email_id, status, reason_for_using
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     
     $stmt->execute([
         $year, $toolName, $type, $noOfLicense, $jobSlots, $resumeViews, $bulkMail, $cost, $revenue, $monthlyCost, $quarterlyCost, $annualCost, $currency, $geography,

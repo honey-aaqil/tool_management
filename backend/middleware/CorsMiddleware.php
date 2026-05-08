@@ -18,7 +18,7 @@ class CorsMiddleware {
     
     private static $productionOrigins = [];
     
-public static function handle() {
+    public static function handle() {
         header('X-Content-Type-Options: nosniff');
         header('X-Frame-Options: DENY');
         header('X-XSS-Protection: 1; mode=block');
@@ -28,50 +28,32 @@ public static function handle() {
         header('Referrer-Policy: strict-origin-when-cross-origin');
         header('Permissions-Policy: geolocation=(), microphone=(), camera=()');
         
-        // Stronger CSP - remove unsafe-inline and unsafe-eval if possible
-        header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' http://localhost:*; frame-ancestors 'none'; base-uri 'self'; form-action 'self';");
-        
-        $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-        $host = $_SERVER['HTTP_HOST'] ?? '';
-        
-        $allowedOrigins = array_merge(self::$allowedOrigins, self::$productionOrigins);
-        
-        // Only use whitelist - remove host-based fallback
-        if (in_array($origin, $allowedOrigins)) {
-            // Only allow credentials for HTTPS origins in production
-            if (strpos($origin, 'https://') === 0 || getenv('APP_ENV') !== 'production') {
-                header('Access-Control-Allow-Origin: ' . $origin);
-                header('Access-Control-Allow-Credentials: true');
-            }
-        } else {
-            if (!empty($origin)) {
-                error_log('CORS rejected: ' . $origin);
-            }
-        }
-        header('Referrer-Policy: strict-origin-when-cross-origin');
-        header('Permissions-Policy: geolocation=(), microphone=(), camera=()');
-        
         $envOrigins = getenv('CORS_ORIGINS');
         if (!empty($envOrigins)) {
             self::$productionOrigins = array_map('trim', explode(',', $envOrigins));
         }
         
-        header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' http://localhost:* https://*; frame-ancestors 'none'; base-uri 'self';");
+        // Stronger CSP
+        header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' http://localhost:* https://*; frame-ancestors 'none'; base-uri 'self';");
         
         $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
         $host = $_SERVER['HTTP_HOST'] ?? '';
         
         $allowedOrigins = array_merge(self::$allowedOrigins, self::$productionOrigins);
         
-        if (empty($origin)) {
-        } elseif (in_array($origin, $allowedOrigins)) {
-            header('Access-Control-Allow-Origin: ' . $origin);
-            header('Access-Control-Allow-Credentials: true');
-        } elseif ($origin === 'http://' . $host || $origin === 'https://' . $host) {
-            header('Access-Control-Allow-Origin: ' . $origin);
-            header('Access-Control-Allow-Credentials: true');
-        } else {
-            error_log('CORS reject: ' . $origin);
+        if (!empty($origin)) {
+            if (in_array($origin, $allowedOrigins)) {
+                // Only allow credentials for HTTPS origins in production
+                if (strpos($origin, 'https://') === 0 || getenv('APP_ENV') !== 'production' || strpos($origin, 'http://localhost') === 0 || strpos($origin, 'http://127.0.0.1') === 0) {
+                    header('Access-Control-Allow-Origin: ' . $origin);
+                    header('Access-Control-Allow-Credentials: true');
+                }
+            } elseif ($origin === 'http://' . $host || $origin === 'https://' . $host) {
+                header('Access-Control-Allow-Origin: ' . $origin);
+                header('Access-Control-Allow-Credentials: true');
+            } else {
+                error_log('CORS rejected: ' . $origin);
+            }
         }
         
         header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS, PATCH');

@@ -23,7 +23,8 @@ if (isset($_SESSION['user_id'])) {
             'email' => Security::sanitizeOutput($_SESSION['user_email'] ?? ''),
             'role' => Security::sanitizeOutput($_SESSION['user_role'] ?? 'user'),
             'admin_access' => isset($_SESSION['admin_access']) ? (bool)$_SESSION['admin_access'] : false
-        ]
+        ],
+        'csrf_token' => Security::generateCsrfToken()
     ]);
 } else {
     echo json_encode(['authenticated' => false]);

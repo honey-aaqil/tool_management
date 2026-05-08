@@ -48,6 +48,9 @@ const api = {
       }
       if (data.authenticated && data.user) {
         localStorage.setItem('user', JSON.stringify(data.user));
+        if (data.csrf_token) {
+          localStorage.setItem('csrf_token', data.csrf_token);
+        }
         return { authenticated: true, user: data.user };
       }
       return { authenticated: false };
@@ -79,6 +82,9 @@ const api = {
       
       if (data.user) {
         localStorage.setItem('user', JSON.stringify(data.user));
+      }
+      if (data.csrf_token) {
+        localStorage.setItem('csrf_token', data.csrf_token);
       }
       return data;
     } catch (error) {

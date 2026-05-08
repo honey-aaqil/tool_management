@@ -45,7 +45,7 @@ foreach ($apiPrefixes as $prefix) {
 
 // Serve PHPMailer images
 if (strpos($requestPath, '/PHPMailer/images/') === 0) {
-    $imagePath = __DIR__ . $requestPath;
+    $imagePath = __DIR__ . '/backend' . $requestPath;
     if (file_exists($imagePath)) {
         $extension = pathinfo($imagePath, PATHINFO_EXTENSION);
         $mimeTypes = ['jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png', 'gif' => 'image/gif'];
